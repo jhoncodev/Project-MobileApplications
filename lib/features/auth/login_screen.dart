@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:reminder_app/features/auth/register_screen.dart';
+import 'package:reminder_app/features/home/home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +81,20 @@ class LoginScreen extends StatelessWidget {
               // 3. Email Input
               _buildLabel('CORREO ELECTRÓNICO'),
               const SizedBox(height: 8),
-              _buildTextField(hintText: 'nombre@ejemplo.com'),
+              _buildTextField(
+                hintText: 'nombre@ejemplo.com',
+                controller: emailController,
+              ),
               const SizedBox(height: 24),
 
               // 4. Password Input
               _buildLabel('CONTRASEÑA'),
               const SizedBox(height: 8),
-              _buildTextField(hintText: '••••••••', obscureText: true),
+              _buildTextField(
+                hintText: '••••••••', 
+                obscureText: true,
+                controller: passwordController,
+              ),
               const SizedBox(height: 12),
 
               // 5. Forgot Password Link
@@ -110,7 +134,19 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: Implement login logic
+                    final email = emailController.text;
+                    final password = passwordController.text;
+
+                    if(email == "admin" && password == "admin123"){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Credenciales incorrectas')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
@@ -148,7 +184,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // TODO: Navigate to register screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterScreen(),
+                        ),
+                      );
                     },
                     child: const Text(
                       'Regístrate',
@@ -182,8 +223,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField({required String hintText, bool obscureText = false}) {
+  Widget _buildTextField({required String hintText, bool obscureText = false, TextEditingController? controller}) {
     return TextField(
+      controller: controller,
       obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
